@@ -1,4 +1,7 @@
+# -*- coding: utf-8 -*-
+
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -10,6 +13,20 @@ import string
 import time
 import json
 from datetime import datetime
+import sys
+
+# 设置标准输出为 UTF-8 编码
+sys.stdout.reconfigure(encoding='utf-8')
+sys.stdin.reconfigure(encoding='utf-8')
+sys.stderr.reconfigure(encoding='utf-8')
+
+# 使用无头模式
+options = webdriver.ChromeOptions()
+options.add_argument("--headless")  # 无头模式
+options.add_argument("--disable-gpu")
+options.add_argument("--window-size=1920,1080")  # 设置窗口大小
+options.add_argument("--no-sandbox")  # 解决部分环境中沙箱问题
+options.add_argument("--disable-dev-shm-usage")  # 解决资源受限问题
 
 class TlineRegister:
     def __init__(self):
@@ -90,7 +107,7 @@ class TlineRegister:
     def register_one(self):
         """注册一个账号"""
         try:
-            self.driver = webdriver.Chrome()
+            self.driver = webdriver.Chrome(options=options)
             self.driver.maximize_window()  # 最大化窗口
             
             # 第一步：打开登录页面并点击立即注册

@@ -1,0 +1,55 @@
+name: Generate
+
+on:
+  workflow_dispatch:
+    inputs:
+      arg1:
+        description: "Account Count to register"
+        required: true
+        default: 1
+
+jobs:
+  generate:
+    runs-on: windows-latest
+
+    steps:
+    # 检出仓库代码
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # 设置 Python 环境
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    # 安装依赖（如果需要 requirements.txt）
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+
+    # 安装浏览器环境
+    - name: Install Chrome
+      run: |
+        choco install googlechrome --no-progress
+
+    - name: Install ChromeDriver
+      run: |
+        choco install chromedriver --no-progress
+        $env:PATH = "C:\ProgramData\chocolatey\bin;" + $env:PATH
+        Write-Host "Updated PATH: $env:PATH"
+
+    # 创建模拟输入的文件
+    - name: Create input file
+      run: |
+        echo ${{ github.event.inputs.arg1 }} > input.txt
+
+    # 使用模拟输入文件运行 Python 脚本
+    - name: Run Python script with simulated input
+      run: Get-Content input.txt | python tline_register.py
+
+    # 上传生成的文件为 artifact
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: registered-accounts
+        path: registered_accounts.json
